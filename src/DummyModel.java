@@ -17,16 +17,27 @@ public class DummyModel implements IBouncingBallsModel {
         this.areaWidth = width;
         this.areaHeight = height;
 
-        Balls.add(new Ball(areaWidth, areaHeight, 1, 1, 2.3, 1, 1));
+        Balls.add(new Ball(areaWidth, areaHeight, 1, 4, 0, 10, 0.5));
+        Balls.add(new Ball(areaWidth, areaHeight, 2, 2, 2, 2, 0.5));
 
     }
 
     @Override
     public void tick(double deltaT) {
-        for(Ball b : Balls) {
+        
+    	for(Ball b : Balls) {
             b.tick(deltaT);
+            for(Ball c : Balls){
+            	if(b != c){
+            		if(Math.pow((b.r-c.r), 2) <= Math.pow(b.x-c.x, 2) + Math.pow(b.y-c.y, 2) && Math.pow(b.x-c.x, 2) + Math.pow(b.y-c.y, 2) <= Math.pow((b.r+c.r), 2)){
+            			
+            		}
+            	}
+            }
         }
     }
+    
+    
 
     @Override
     public List<Ellipse2D> getBalls() {

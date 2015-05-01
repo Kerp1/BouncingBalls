@@ -8,7 +8,7 @@ public class Ball {
     private final double areaWidth;
     private final double areaHeight;
 
-    private double x, y, vx, vy, r;
+    public double x, y, vx, vy, r;
 
     public Ball(double width, double height, double x, double y, double vx, double vy, double r) {
         this.areaWidth = width;
@@ -22,14 +22,22 @@ public class Ball {
 
 
     public void tick(double deltaT) {
+    	 
         if (x < r || x > areaWidth - r) {
             vx *= -1;
         }
         if (y < r || y > areaHeight - r) {
-            vy *= -1;
+            vy = vy * -1;
+            y += vy * deltaT;
+        }else{ 
+        	vy += -9.82*deltaT;
+        	y += vy * deltaT;	
         }
         x += vx * deltaT;
-        y += vy * deltaT;
+        
+       
+        
+        
     }
 
     public Ellipse2D getEllipse() {
