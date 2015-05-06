@@ -15,27 +15,18 @@ public class Cord {
         this.y = y;
     }
 
-    public void setPolar(double v ,double r) {
-        Cord c = polarToRect(v, r);
-        this.x = c.x;
-        this.y = c.y;
-    }
-
-
-    public Cord polarToRect(double v, double r) {
-        return new Cord(Math.cos(v) * r, Math.sin(v) * r);
-    }
-
     public Cord polarToRect() {
         return new Cord(Math.cos(y) * x, Math.sin(y) * x);
     }
 
-    public Cord rectToPolar(double x, double y) {
-        return new Cord(Math.sqrt(x * x + y * y), Math.atan2(y, x));
-    }
-
     public Cord rectToPolar() {
-        return new Cord(Math.sqrt(x * x + y * y), Math.atan2(y, x));
+    	double v = 0;
+    	if(y<0 && x < 0){
+    		v = Math.PI + Math.atan(y/x);
+    	}else{
+    		v = Math.atan(y/x);
+    	}
+        return new Cord(Math.sqrt(x * x + y * y),v);
     }
 
     public Cord sub(Cord other) {

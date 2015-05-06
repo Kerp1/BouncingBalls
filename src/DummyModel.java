@@ -43,32 +43,24 @@ public class DummyModel implements IBouncingBallsModel {
         Ball c = Balls.get(1);
         if(Math.pow((b.r - c.r), 2) <= Math.pow(b.x - c.x, 2) + Math.pow(b.y - c.y, 2) && Math.pow(b.x - c.x, 2) + Math.pow(b.y - c.y, 2) <= Math.pow((b.r + c.r), 2)) {
             collide(b, c, deltaT);
-        } else {
-            for (Ball a : Balls) {
-                a.tick(deltaT);
-            }
         }
+        for (Ball a : Balls) {
+             a.tick(deltaT);
+        }
+        
     }
 
     private void collide(Ball one, Ball two, double deltaT) {
 
-        Cord vOne = new Cord(one.vx, one.vy).rectToPolar();
-        Cord vTwo = new Cord(two.vx, two.vy).rectToPolar();
+        Cord vOne = new Cord(one.vx, one.vy);
+        Cord vTwo = new Cord(two.vx, two.vy);
+        vOne = vOne.rectToPolar();
+        vTwo = vTwo.rectToPolar();
+        
+        double a = Math.atan((one.y-two.y)/(one.x-two.x));
 
-        double a;
-        if(one.x - two.x == 0) {
-            a = Math.PI / 2;
-        } else {
-             a = Math.atan((one.y - two.y) / (one.x - two.x));
-        }
-
-        if ((one.y - two.y) / (one.x - two.x) >= 0) {
-            vOne.y -= a;
-            vTwo.y -= a;
-        } else {
-            vOne.y -= (Math.PI - a);
-            vTwo.y -= (Math.PI - a);
-         }
+        vOne.y -= a;
+        vTwo.y -= a;
 
         vOne = vOne.polarToRect();
         vTwo = vTwo.polarToRect();
@@ -76,29 +68,22 @@ public class DummyModel implements IBouncingBallsModel {
         double u1 = vOne.x;
         double u2 = vTwo.x;
 
-        double I = u1 + u2;
+        double I = (u1 + u2);
         double R = -(u2 - u1);
 
-        double v1 = (I + 1*R / (1 + 1)) - R;
-        double v2 = (I + 1*R) / (1 + 1);
+        double v1 = ((I - 1*R) / (1 + 1));
+        double v2 = R + v1;
 
         vOne.x = v1;
         vTwo.x = v2;
-
+        
+        System.out.println((u1 + u2) + " " + (v1 + v2));
+        
         vOne = vOne.rectToPolar();
         vTwo = vTwo.rectToPolar();
 
-
-        if ((one.y - two.y) / (one.x - two.x) >= 0) {
-
-            vOne.y += a;
-            vTwo.y += a;
-            System.out.println("nej");
-        } else {
-            System.out.println("här");
-            vOne.y += (Math.PI - a);
-            vTwo.y += (Math.PI - a);
-        }
+        vOne.y += a;
+        vTwo.y += a;
 
         vOne = vOne.polarToRect();
         vTwo = vTwo.polarToRect();
@@ -109,6 +94,21 @@ public class DummyModel implements IBouncingBallsModel {
         two.vx = vTwo.x;
         two.vy = vTwo.y;
 
+        //to avoid something
+      /*  Cord oneC = new Cord(one.x, one.y).rectToPolar();
+        Cord twoC = new Cord(two.x, two.y).rectToPolar();
+        Cord v3one = oneC.sub(twoC);
+        v3one.x /= v3one.x;
+        v3one = v3one.polarToRect();
+        
+        /*double dist = ((one.r + two.r) -  Math.sqrt((one.x - two.x)*(one.x - two.x) + (one.y - two.y)*(one.y-two.y)))/2;
+        
+        two.x += v3one.x * dist;
+        two.y += v3one.y * dist;
+        
+        one.x += (-v3one.x * dist);
+        one.y += (-v3one.y * dist);
+       /* 
         one.x += one.vx * deltaT;
         one.y += one.vy * deltaT;
 
@@ -153,6 +153,25 @@ public class DummyModel implements IBouncingBallsModel {
         Cord vTwo = new Cord(v2 * Math.cos(Math.atan2(projtwo.y, projtwo.x)), v2 * Math.sin(Math.atan2(projtwo.y, projtwo.x)));
         two.vx = two.vx - projtwo.x + vTwo.x;
         two.vy = two.vy - projtwo.y + vTwo.y;*/
+    }
+    
+    public double tangens(double x, double y) {
+    	double v = 0;
+    	if(y >= 0 && x > 0){
+    		v = Math.atan(y/x);
+    	}else if(y>= 0 && x < 0){
+    		v =  Math.PI + Math.atan(y/x);
+    	}else if(y>=0 && x == 0){
+    		v = Math.PI/2;
+    	}else if(y<0 && x > 0){
+    		v = 2*Math.PI - Math.atan(y/x);
+    	}else if(y<0 && x < 0){
+    		v = Math.PI + Math.atan(y/x);
+    	}else if(y<0 && x ==0){
+    		v = Math.PI*3/2;
+    	}	
+    
+        return v;
     }
 
     @Override
