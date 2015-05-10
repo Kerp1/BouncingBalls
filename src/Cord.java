@@ -3,11 +3,11 @@
  */
 public class Cord {
 
-    public double x, y;
+    private double x, y;
 
     public Cord() {
-        x = 0; // == r
-        y = 0; // == v
+        x = 0;
+        y = 0;
     }
 
     public Cord(double x, double y) {
@@ -15,26 +15,51 @@ public class Cord {
         this.y = y;
     }
 
-    public Cord polarToRect() {
-        return new Cord(Math.cos(y) * x, Math.sin(y) * x);
+    public double getX() {
+        return x;
     }
 
-    public Cord rectToPolar() {
-    	double v = 0;
-    	if(y<0 && x < 0){
-    		v = Math.PI + Math.atan(y/x);
-    	}else{
-    		v = Math.atan(y/x);
-    	}
-        return new Cord(Math.sqrt(x * x + y * y),v);
+    public double getY() {
+        return y;
     }
 
-    public Cord sub(Cord other) {
-        return new Cord(this.x * Math.cos(this.y) - other.x * Math.cos(other.y), this.x * Math.sin(this.y) - other.x * Math.sin(other.y));
+    public void setX(double x) {
+        this.x = x;
     }
 
-    public Cord project(double vx, double vy) {
-        double div = (vx * x + vy * y) / (x * x + y * y);
-        return new Cord(div*x, div*y);
+    public void setY(double y) {
+        this.y = y;
     }
+
+    public double getV() {
+        return Math.atan2(y, x);
+    }
+
+    public double getR() {
+        return Math.sqrt(x * x + y * y);
+    }
+
+    public void setV(double v) {
+
+        double newX = calculateX(v, getR());
+        double newY = calculateY(v, getR());
+        setX(newX);
+        setY(newY);
+    }
+
+    public Cord rotate(double a) {
+        double currentV = getV();
+        currentV -= a;
+        return new Cord(calculateX(currentV, getR()), calculateY(currentV, getR()));
+       // setV(currentV);
+    }
+
+    public double calculateX(double v, double r) {
+        return Math.cos(v) * r;
+    }
+
+    public double calculateY(double v, double r) {
+        return Math.sin(v) * r;
+    }
+
 }

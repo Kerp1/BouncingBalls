@@ -8,9 +8,9 @@ public class Ball {
     private final double areaWidth;
     private final double areaHeight;
 
-    public double x, y, vx, vy, r;
+    public double x, y, vx, vy, r, m;
 
-    public Ball(double width, double height, double x, double y, double vx, double vy, double r) {
+    public Ball(double width, double height, double x, double y, double vx, double vy, double r, double m) {
         this.areaWidth = width;
         this.areaHeight = height;
         this.x = x;
@@ -18,21 +18,32 @@ public class Ball {
         this.vx = vx;
         this.vy = vy;
         this.r = r;
+        this.m = m;
     }
 
 
     public void tick(double deltaT) {
-    	 
+    	 boolean appliedGravity = false;
+        double g = 9.81;
         if (x < r || x > areaWidth - r) {
             vx *= -1;
+            vy += -g*deltaT;
+            appliedGravity = true;
         }
         if (y < r || y > areaHeight - r) {
+            if(appliedGravity) {
+                vy -= -g*deltaT;
+                appliedGravity = false;
+            }
             vy = vy * -1;
-            y += vy * deltaT;
-        }else{ 
-        	vy += -9.82*deltaT;
-        	y += vy * deltaT;	
+           // vy += -g * deltaT;
+            System.out.println("STUDS STUDS");
+        }else{
+            if(!appliedGravity) {
+               vy += -g * deltaT;
+            }
         }
+        y += vy * deltaT;
         x += vx * deltaT;
         
        

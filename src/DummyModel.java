@@ -20,158 +20,105 @@ public class DummyModel implements IBouncingBallsModel {
         //Balls.add(new Ball(areaWidth, areaHeight, 3, 2, 2, 2, 0.5));
         //Balls.add(new Ball(areaWidth, areaHeight, 8, 2, -2, 2, 0.5));
 
-        Balls.add(new Ball(areaWidth, areaHeight, 1, 4, 2, 2, 0.3));
-        Balls.add(new Ball(areaWidth, areaHeight, 2, 2, -2, 2, 0.3));
+        Balls.add(new Ball(areaWidth, areaHeight, 8, 8, 2, 2, 0.5, 10));
+        Balls.add(new Ball(areaWidth, areaHeight, 2, 8, 2, 2, 1, 40));
 
     }
+
+    private double t = 0;
+    private double t1 = 0;
 
     @Override
     public void tick(double deltaT) {
-        
-    	/*for(Ball b : Balls) {
-            b.tick(deltaT);
-            for(Ball c : Balls){
-            	if(b != c){
-            		if(Math.pow((b.r-c.r), 2) <= Math.pow(b.x-c.x, 2) + Math.pow(b.y-c.y, 2) && Math.pow(b.x-c.x, 2) + Math.pow(b.y-c.y, 2) <= Math.pow((b.r+c.r), 2)){
-            			collide(b, c);
-            		}
-            	}
-            }
-    }*/
 
         Ball b = Balls.get(0);
         Ball c = Balls.get(1);
+
+        double bvel = (Math.pow(Math.sqrt((b.vx * b.vx + b.vy * b.vy)), 2) * b.m) / 2;
+        double cvel = (Math.pow(Math.sqrt((c.vx * c.vx + c.vy * c.vy)), 2) * c.m) / 2;
+
+        //double bvel = (((b.vy*b.vy) * b.m) / 2);
+        //double cvel = (c.vy*c.vy) * c.m / 2;
+
+
+        double bpot = b.y * b.m * 9.81;
+        double cpot = c.y * c.m * 9.81;
+
+        //System.out.println("Total energy: " + (bvel  + cvel + bpot + cpot));
+
+        //System.out.println("MGH: " + bpot + " MV2: " + bvel + " TOT: " + (bpot + bvel) + " DIF: " + (t - (bpot + bvel)));
+
+        t = Math.max(t, (bvel  + cvel + bpot + cpot));
+        System.out.println(t);
+
+        b.tick(deltaT);
+        c.tick(deltaT);
+        //for (Ball a : Balls) {
+        //    a.tick(deltaT);
+        //}
         if(Math.pow((b.r - c.r), 2) <= Math.pow(b.x - c.x, 2) + Math.pow(b.y - c.y, 2) && Math.pow(b.x - c.x, 2) + Math.pow(b.y - c.y, 2) <= Math.pow((b.r + c.r), 2)) {
-            collide(b, c, deltaT);
-        }
-        for (Ball a : Balls) {
-             a.tick(deltaT);
+            collide(b, c);
         }
         
     }
 
-    private void collide(Ball one, Ball two, double deltaT) {
+    private void collide(Ball one, Ball two) {
 
         Cord vOne = new Cord(one.vx, one.vy);
         Cord vTwo = new Cord(two.vx, two.vy);
-        vOne = vOne.rectToPolar();
-        vTwo = vTwo.rectToPolar();
-        
-        double a = Math.atan((one.y-two.y)/(one.x-two.x));
 
-        vOne.y -= a;
-        vTwo.y -= a;
+        double m1 = one.m;
+        double m2 = two.m;
 
-        vOne = vOne.polarToRect();
-        vTwo = vTwo.polarToRect();
+        //vOne = vOne.rectToPolar();
+        //vTwo = vTwo.rectToPolar();
 
-        double u1 = vOne.x;
-        double u2 = vTwo.x;
+        //System.out.println("onex: " + vOne.getX() + " == " + vOne.calculateX(vOne.getV(), vOne.getR()));
+        //double a = Math.atan((one.y-two.y)/(one.x-two.x));
+        double a = Math.atan2(one.y - two.y, one.x - two.x);
 
-        double I = (u1 + u2);
+        //System.out.println("vONE v: " + vOne.getX());
+        //System.out.println("vONE r: " + vOne.getY());
+        vOne = vOne.rotate(a);
+        //System.out.println("vONE v: " + vOne.getX());
+        //System.out.println("vONE r: " + vOne.getY());
+        //System.out.println("vONE v: " + vOne.getX());
+        //System.out.println("vONE r: " + vOne.getY());
+
+        vTwo = vTwo.rotate(a);
+
+        //vOne.y -= a;
+        //vTwo.y -= a;
+
+        //vOne = vOne.polarToRect();
+        //vTwo = vTwo.polarToRect();
+
+        double u1 = vOne.getX();
+        double u2 = vTwo.getX();
+
+        double I = (m1*u1 + m2*u2);
         double R = -(u2 - u1);
 
-        double v1 = ((I - 1*R) / (1 + 1));
+        double v1 = ((I - m2*R) / (m1 + m2));
         double v2 = R + v1;
 
-        vOne.x = v1;
-        vTwo.x = v2;
+        vOne.setX(v1);
+        vTwo.setX(v2);
+        System.out.println((m1* u1 + m2*u2) + " " + (m1*v1 + m2*v2));
         
-        System.out.println((u1 + u2) + " " + (v1 + v2));
-        
-        vOne = vOne.rectToPolar();
-        vTwo = vTwo.rectToPolar();
+        //vOne = vOne.rectToPolar();
+       // vTwo = vTwo.rectToPolar();
 
-        vOne.y += a;
-        vTwo.y += a;
+        vOne = vOne.rotate(-a);
+        //System.out.println("vONE v: " + vOne.getX());
+        //System.out.println("vOne r: " + vOne.getY());
+        vTwo = vTwo.rotate(-a);
 
-        vOne = vOne.polarToRect();
-        vTwo = vTwo.polarToRect();
+        one.vx = vOne.getX();
+        one.vy = vOne.getY();
 
-        one.vx = vOne.x;
-        one.vy = vOne.y;
-
-        two.vx = vTwo.x;
-        two.vy = vTwo.y;
-
-        //to avoid something
-      /*  Cord oneC = new Cord(one.x, one.y).rectToPolar();
-        Cord twoC = new Cord(two.x, two.y).rectToPolar();
-        Cord v3one = oneC.sub(twoC);
-        v3one.x /= v3one.x;
-        v3one = v3one.polarToRect();
-        
-        /*double dist = ((one.r + two.r) -  Math.sqrt((one.x - two.x)*(one.x - two.x) + (one.y - two.y)*(one.y-two.y)))/2;
-        
-        two.x += v3one.x * dist;
-        two.y += v3one.y * dist;
-        
-        one.x += (-v3one.x * dist);
-        one.y += (-v3one.y * dist);
-       /* 
-        one.x += one.vx * deltaT;
-        one.y += one.vy * deltaT;
-
-        two.x += two.vx * deltaT;
-        two.y += two.vy * deltaT;
-        /*Cord oneC = new Cord(one.x, one.y).rectToPolar();
-        Cord twoC = new Cord(two.x, two.y).rectToPolar();
-
-        Cord v3one = oneC.sub(twoC);
-        Cord v3two = twoC.sub(oneC);
-
-        Cord projone = v3one.project(one.vx, one.vy);
-        Cord projtwo = v3one.project(two.vx, two.vy);
-
-        Cord cu1 = new Cord(projone.x, projone.y).rectToPolar();
-        Cord cu2 = new Cord(projtwo.x, projtwo.y).rectToPolar();
-
-        double ad = Math.atan2(projone.y, projone.x);
-        double da = Math.atan2(projtwo.y, projtwo.x);
-
-        double u1 = cu1.x;
-        double u2 = cu2.x;
-
-
-
-
-        //double u1 = Math.sqrt(projone.x * projone.x + projone.y * projone.y);
-        // double u2 = Math.sqrt(projtwo.x * projtwo.x + projtwo.y * projtwo.y);
-
-        double I = u1 + u2;
-        double R = -(u2 - u1);
-
-        double v1 = (I + 1*R / (1 + 1)) - R;
-        double v2 = (I + 1*R) / (1 + 1);
-
-        // Ball 1
-        Cord vOne = new Cord(v1 * Math.cos(Math.atan2(projone.y, projone.x)), v1 * Math.sin(Math.atan2(projone.y, projone.x)));
-        one.vx = one.vx - projone.x + vOne.x;
-        one.vy = one.vy - projone.y + vOne.y;
-
-        //Ball 2
-        Cord vTwo = new Cord(v2 * Math.cos(Math.atan2(projtwo.y, projtwo.x)), v2 * Math.sin(Math.atan2(projtwo.y, projtwo.x)));
-        two.vx = two.vx - projtwo.x + vTwo.x;
-        two.vy = two.vy - projtwo.y + vTwo.y;*/
-    }
-    
-    public double tangens(double x, double y) {
-    	double v = 0;
-    	if(y >= 0 && x > 0){
-    		v = Math.atan(y/x);
-    	}else if(y>= 0 && x < 0){
-    		v =  Math.PI + Math.atan(y/x);
-    	}else if(y>=0 && x == 0){
-    		v = Math.PI/2;
-    	}else if(y<0 && x > 0){
-    		v = 2*Math.PI - Math.atan(y/x);
-    	}else if(y<0 && x < 0){
-    		v = Math.PI + Math.atan(y/x);
-    	}else if(y<0 && x ==0){
-    		v = Math.PI*3/2;
-    	}	
-    
-        return v;
+        two.vx = vTwo.getX();
+        two.vy = vTwo.getY();
     }
 
     @Override
