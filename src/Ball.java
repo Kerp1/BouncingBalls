@@ -33,11 +33,8 @@ public class Ball {
         if (y < r || y > areaHeight - r) {
             if(appliedGravity) {
                 vy -= -g*deltaT;
-                appliedGravity = false;
             }
             vy = vy * -1;
-           // vy += -g * deltaT;
-            System.out.println("STUDS STUDS");
         }else{
             if(!appliedGravity) {
                vy += -g * deltaT;
@@ -45,10 +42,6 @@ public class Ball {
         }
         y += vy * deltaT;
         x += vx * deltaT;
-        
-       
-        
-        
     }
 
     public Ellipse2D getEllipse() {

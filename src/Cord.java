@@ -51,7 +51,6 @@ public class Cord {
         double currentV = getV();
         currentV -= a;
         return new Cord(calculateX(currentV, getR()), calculateY(currentV, getR()));
-       // setV(currentV);
     }
 
     public double calculateX(double v, double r) {
